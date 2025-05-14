@@ -1,90 +1,90 @@
-# Experiment: GRPO-Fine tuning 
+# Experiment: GRPO-Feinabstimmung
 
 
-## Description
+## Beschreibung
 
-Llama 8B Distill version of deepseek trained with GRPO
+Llama 8B Distill-Version von deepseek trainiert mit GRPO
 
-Models can also be found here: [Hugginface Collection](https://huggingface.co/collections/moslehGen/grpo-681ccc9a22e612185370e900)
+Modelle können auch hier gefunden werden: [Hugginface Collection](https://huggingface.co/collections/moslehGen/grpo-681ccc9a22e612185370e900)
 
-## Contents
+## Inhalt
 
-| Notebook | Description | Model Repo | 
+| Notizbuch | Beschreibung | Modell Repo |
 |----------|-------------|-------------|
-| `Tourism_Deepseek_R1_Llama3_1__GRPO_TFIDF+SentReward.ipynb` | 10K Dataset subset of the 166K recieved | moslehGen/DeepSeek-R1-Distill-Llama-8B5KSteps_TFIDF_SentReward
-| `Tourism_Deepseek_R1_Llama3_1__GRPO_Training-500 Steps-Generic-Reward.ipynb` | 5k data samples, subset of the 166K recieved | moslehGen/DeepSeek-R1-Distill-Llama-8B-Steps-5000
-| `Tourism_Deepseek_R1_Llama3_1__GRPO_Training-Round-2.ipynb` | 500 Data samples from 26k COT Dataset | moslehGen/DeepSeek-R1-Distill-Llama-8B-500Steps
+| `Tourismus_Deepseek_R1_Llama3_1__GRPO_TFIDF+SentReward.ipynb` | 10K Datensatz Teilmenge der 166K erhaltenen | moslehGen/DeepSeek-R1-Distill-Llama-8B5KSteps_TFIDF_SentReward
+| Tourismus_Deepseek_R1_Llama3_1__GRPO_Training-500 Steps-Generic-Reward.ipynb" | 5k Datenproben, Teilmenge der 166K erhaltenen | moslehGen/DeepSeek-R1-Distill-Llama-8B-Steps-5000
+| Touristik_Deepseek_R1_Llama3_1__GRPO_Training-Round-2.ipynb` | 500 Datenproben aus 26k COT-Datensatz | moslehGen/DeepSeek-R1-Distill-Llama-8B-500Steps
 
-## How to Run
+## Wie man ausführt
 
-Inference with Colab can be found here: [Colab](https://colab.research.google.com/drive/1y7ecU3swRg98_qW-EIL_AAq816Qrk5qD?usp=sharing)
-
-
-## Reward Functions
-
-For the  `Tourism_Deepseek_R1_Llama3_1__GRPO_TFIDF+SentReward.ipynb` two new reward function were introduced. One using TFIDF to detect similarity between completion (model generated answers) and reference answers. Another using Sentiments to find similar sentiment from both completion and answers if they match.
+Die Inferenz mit Colab kann hier gefunden werden: [Colab](https://colab.research.google.com/drive/1y7ecU3swRg98_qW-EIL_AAq816Qrk5qD?usp=sharing)
 
 
-#### Simarity Reward Function
+## Belohnungsfunktionen
+
+Für die `Tourism_Deepseek_R1_Llama3_1__GRPO_TFIDF+SentReward.ipynb` wurden zwei neue Reward-Funktionen eingeführt. Die eine nutzt TFIDF, um die Ähnlichkeit zwischen der Vervollständigung (modellgenerierte Antworten) und den Referenzantworten zu erkennen. Eine andere nutzt Sentiments, um ähnliche Stimmungen in der Vervollständigung und den Antworten zu finden, wenn sie übereinstimmen.
+
+
+#### Ähnlichkeits-Belohnungsfunktion
 
 ```python
 
-german_stopwords = stopwords.words('german')
+german_stopwords = stopwords.words('deutsch')
 def tfidf_similarity_reward_func(prompts, completions, answer, **kwargs) -> list[float]:
-    # Extract responses and the target answer
-    responses = [completion[0]['content'] for completion in completions]
+    # Extrahiere Antworten und die Zielantwort
+    answers = [completion[0]['content'] for completion in completions]
     target_answer = answer[0]
 
-    # Extract the question (optional: you can include the prompt if needed in the similarity calculation)
+    # Extrahieren Sie die Frage (optional: Sie können die Aufforderung bei Bedarf in die Ähnlichkeitsberechnung einbeziehen)
     q = prompts[0][-1]['content']
 
-    # Initialize the TF-IDF vectorizer
-    vectorizer = TfidfVectorizer(stop_words=german_stopwords)
+    # Initialisieren Sie den TF-IDF-Vektorisierer
+    vectorizer = TfidfVectorizer(stop_words=deutsche_stopwords)
 
-    # Combine target answer and completions for vectorization
+    # Kombinieren Sie Zielantwort und Vervollständigungen für die Vektorisierung
     all_texts = [target_answer] + responses
 
-    # Fit and transform the texts into TF-IDF vectors
-    tfidf_matrix = vectorizer.fit_transform(all_texts)
+    # Anpassung und Transformation der Texte in TF-IDF-Vektoren
+    tfidf_matrix = vectorizer.fit_transform(alle_texte)
 
-    # Calculate cosine similarities between the target answer (first vector) and completions (rest)
+    # Berechnen der Cosinus-Ähnlichkeiten zwischen der Zielantwort (erster Vektor) und den Ergänzungen (Rest)
     cosine_similarities = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:])
 
-    # Debugging print (can be removed if not needed)
-    print('-'*20, f"Question:\n{q}", f"\nAnswer:\n{target_answer}", f"\nResponse:\n{responses[0]}", f"\nSimilarity Score: {cosine_similarities[0][0]}")
+    # Debugging-Druck (kann entfernt werden, wenn nicht benötigt)
+    print('-'*20, f "Frage:\n{q}", f"\nAntwort:\n{Ziel-Antwort}", f"\nAntwort:\n{Antworten[0]}", f"\nÄhnlichkeitswert: {cosine_similarities[0][0]}")
 
-    # Map cosine similarity to reward (e.g., if similarity is above a threshold, reward)
-    #rewards = [1.0 if similarity[0] > SIMILARITY_THRESHOLD else 0.0 for similarity in cosine_similarities]
-    rewards = [float(sim[0]) for sim in cosine_similarities]  # return actual score as reward
+    # Kosinusähnlichkeit auf Belohnung abbilden (z. B. wenn die Ähnlichkeit über einem Schwellenwert liegt, Belohnung)
+    #Belohnungen = [1.0 if similarity[0] > SIMILARITY_THRESHOLD else 0.0 for similarity in cosine_similarities]
+    rewards = [float(sim[0]) for sim in cosine_similarities] # Rückgabe der tatsächlichen Punktzahl als Belohnung
 
-    return rewards
+    Belohnungen zurückgeben
 
 ```
 
-#### Sentiment Reward Function
+#### Sentiment-Belohnungsfunktion
 
-`"oliverguhr/german-sentiment-bert"` model was chosen as the senitment analyzer as it scored 81% on F1 on our reference answer.
+Das Modell "oliverguhr/german-sentiment-bert" wurde als Sentiment-Analysator gewählt, da es bei unserer Referenzantwort 81% auf F1 erzielte.
 
 ```python
 
-# Load sentiment model once
+# Sentiment-Modell einmal laden
 sentiment_pipeline = pipeline("sentiment-analysis", model="oliverguhr/german-sentiment-bert",truncation=True,max_length=512)
 
 def sentiment_match_reward_func(prompts, completions, answer, **kwargs) -> list[float]:
-    # Assume answer is a list of one string (like [answer])
+    # Angenommen, Antwort ist eine Liste mit einem String (wie [answer])
 
-    answer_sentiment = sentiment_pipeline(answer[0])[0]['label']
+    antwort_sentiment = sentiment_pipeline(antwort[0])[0]['label']
 
-    responses = [completion[0]['content'] for completion in completions]
-    completion_sentiments = sentiment_pipeline(responses)
+    answers = [completion[0]['content'] for completion in completions]
+    abschluss_sentiment = sentiment_pipeline(antworten)
 
-    rewards = [
+    Belohnungen = [
         1.0 if completion_sent['label'] == answer_sentiment else 0.0
         for completion_sent in completion_sentiments
     ]
-    print('-'*20, f"Answer Sentiment:\n{answer_sentiment}", f"\nResponse Sentiment:\n{completion_sentiments[0]['label']}", f"\nReward:\n{rewards[0]}")
+    print('-'*20, f "Antwort-Sentiment:\n{Antwort-Sentiment}", f"\nAntwort-Sentiment:\n{Abschluss-Sentiment[0]['label']}", f"\nBelohnung:\n{Belohnung[0]}")
 
-    return rewards
+    Belohnungen zurückgeben
 
 ```
 
