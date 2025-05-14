@@ -1,12 +1,12 @@
-# Saving Models to GGUF with Unsloth
+# Speichern von Modellen in GGUF mit Unsloth
 
-This guide explains how to save your fine-tuned models in GGUF format using [Unsloth](https://docs.unsloth.ai/basics/running-and-saving-models/saving-to-gguf), suitable for tools like LM studio.
+In dieser Anleitung wird erklärt, wie Sie Ihre fein abgestimmten Modelle mit [Unsloth](https://docs.unsloth.ai/basics/running-and-saving-models/saving-to-gguf) im GGUF-Format speichern, das für Tools wie LM Studio geeignet ist.
 
-## Saving Locally
+## Lokales Speichern
 
-To save your model in GGUF format locally:
+So speichern Sie Ihr Modell lokal im GGUF-Format:
 
-You can also save it in hugginface hub for free and then load it through LM studio
+Sie können es auch kostenlos in Hugginface Hub speichern und dann mit LM Studio laden
 ```python
 model.push_to_hub_gguf(chosen_model+"-GGUF-q4_k_m", tokenizer, quantization_method = "q4_k_m",token = "YOUR_HF_TOKEN")
 
